@@ -1,203 +1,248 @@
-/* ============================================
-   COMING SOON — main1.js
-============================================ */
+    /* ============================================
+    COMING SOON — main1.js
+    ============================================ */
 
-/* ============================================
-   CURSOR PARALLAX BACKGROUND
+    /* ============================================
+    1. CURSOR PARALLAX BACKGROUND
+    ============================================ */
+    const bg = document.querySelector('.bg');
 
-   How it works:
-   - Mouse position is normalised to -1 → +1
-     from the centre of the screen.
-   - The bg element is translated in the
-     OPPOSITE direction (classic parallax).
-   - A lerp (linear interpolation) loop gives
-     buttery-smooth easing — no CSS animation
-     fighting the transform.
-   - On touch devices: drag touch = parallax.
-   - On mobile tilt: deviceorientation = parallax.
-   - bg has inset:-5% / 110% size so the extra
-     image area is always off-screen.
-============================================ */
+    const STRENGTH = 28;
+    const EASE     = 0.055;
 
-const bg = document.querySelector('.bg');
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+    let rafId = null;
 
-/* Max pixel shift at screen edge */
-const STRENGTH = 28;
+    function lerp(a, b, t) { return a + (b - a) * t; }
 
-/* Lerp ease — lower = smoother, higher = snappier */
-const EASE = 0.055;
+    function applyTransform() {
+        bg.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
 
-let targetX = 0, targetY = 0;
-let currentX = 0, currentY = 0;
-let rafId = null;
-
-/* ── Lerp helper ── */
-function lerp(a, b, t) {
-    return a + (b - a) * t;
-}
-
-/* ── Apply transform ── */
-function applyTransform() {
-    bg.style.transform = `translate(${currentX}px, ${currentY}px)`;
-}
-
-/* ── Animation loop ── */
-function tick() {
-    currentX = lerp(currentX, targetX, EASE);
-    currentY = lerp(currentY, targetY, EASE);
-
-    applyTransform();
-
-    const doneX = Math.abs(targetX - currentX) < 0.04;
-    const doneY = Math.abs(targetY - currentY) < 0.04;
-
-    if (!doneX || !doneY) {
-        rafId = requestAnimationFrame(tick);
-    } else {
-        /* Snap to exact target and stop loop (saves CPU/battery) */
-        currentX = targetX;
-        currentY = targetY;
+    function tick() {
+        currentX = lerp(currentX, targetX, EASE);
+        currentY = lerp(currentY, targetY, EASE);
         applyTransform();
-        rafId = null;
-    }
-}
 
-function startLoop() {
-    if (!rafId) rafId = requestAnimationFrame(tick);
-}
-
-/* ── Mouse move ── */
-document.addEventListener('mousemove', (e) => {
-    const nx = (e.clientX / window.innerWidth  - 0.5) * 2; /* -1 to +1 */
-    const ny = (e.clientY / window.innerHeight - 0.5) * 2;
-
-    targetX = -nx * STRENGTH;
-    targetY = -ny * STRENGTH;
-
-    startLoop();
-});
-
-/* ── Mouse leaves window → drift back to centre ── */
-document.addEventListener('mouseleave', () => {
-    targetX = 0;
-    targetY = 0;
-    startLoop();
-});
-
-/* ── Touch drag (mobile) ── */
-document.addEventListener('touchmove', (e) => {
-    const t = e.touches[0];
-    const nx = (t.clientX / window.innerWidth  - 0.5) * 2;
-    const ny = (t.clientY / window.innerHeight - 0.5) * 2;
-
-    targetX = -nx * STRENGTH;
-    targetY = -ny * STRENGTH;
-
-    startLoop();
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-    targetX = 0;
-    targetY = 0;
-    startLoop();
-}, { passive: true });
-
-/* ── Device tilt (gyroscope on phones) ── */
-window.addEventListener('deviceorientation', (e) => {
-    if (e.gamma === null || e.beta === null) return;
-
-    /*
-     * gamma = left/right tilt  (-90° … +90°)
-     * beta  = forward/back tilt (-180° … +180°),
-     *         offset by ~20° (typical hold angle)
-     */
-    const nx = Math.max(-1, Math.min(1, e.gamma / 25));
-    const ny = Math.max(-1, Math.min(1, (e.beta - 20) / 35));
-
-    targetX = -nx * STRENGTH;
-    targetY = -ny * STRENGTH;
-
-    startLoop();
-});
-
-/* ============================================
-   NEWSLETTER FORM
-============================================ */
-
-const emailInput  = document.getElementById('emailInput');
-const sendBtn     = document.getElementById('sendBtn');
-const formMessage = document.getElementById('formMessage');
-
-function isValidEmail(value) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-}
-
-function showMessage(text, type) {
-    formMessage.textContent = text;
-    formMessage.className   = 'form-message ' + type;
-    clearTimeout(formMessage._timer);
-    formMessage._timer = setTimeout(() => {
-        formMessage.textContent = '';
-        formMessage.className   = 'form-message';
-    }, 4000);
-}
-
-function handleSubmit() {
-    const email = emailInput.value.trim();
-
-    if (!email) {
-        showMessage('Please enter your email address.', 'error');
-        emailInput.focus();
-        return;
+        if (Math.abs(targetX - currentX) > 0.04 || Math.abs(targetY - currentY) > 0.04) {
+            rafId = requestAnimationFrame(tick);
+        } else {
+            currentX = targetX;
+            currentY = targetY;
+            applyTransform();
+            rafId = null;
+        }
     }
 
-    if (!isValidEmail(email)) {
-        showMessage('Please enter a valid email address.', 'error');
-        emailInput.focus();
-        return;
+    function startLoop() {
+        if (!rafId) rafId = requestAnimationFrame(tick);
     }
 
-    sendBtn.disabled    = true;
-    sendBtn.textContent = '...';
+    /* Mouse */
+    document.addEventListener('mousemove', (e) => {
+        const nx = (e.clientX / window.innerWidth  - 0.5) * 2;
+        const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+        targetX = -nx * STRENGTH;
+        targetY = -ny * STRENGTH;
+        startLoop();
+    });
 
-    /*
-     * ── Replace with your real API call ──
-     *
-     * fetch('/api/subscribe', {
-     *   method: 'POST',
-     *   headers: { 'Content-Type': 'application/json' },
-     *   body: JSON.stringify({ email })
-     * })
-     * .then(res => res.json())
-     * .then(() => {
-     *   showMessage("You're on the list! 🎉", 'success');
-     *   emailInput.value    = '';
-     *   sendBtn.disabled    = false;
-     *   sendBtn.textContent = 'SEND';
-     * })
-     * .catch(() => {
-     *   showMessage('Something went wrong. Try again.', 'error');
-     *   sendBtn.disabled    = false;
-     *   sendBtn.textContent = 'SEND';
-     * });
-     */
-    setTimeout(() => {
-        showMessage("You're on the list! We'll be in touch 🎉", 'success');
-        emailInput.value    = '';
-        sendBtn.disabled    = false;
-        sendBtn.textContent = 'SEND';
-    }, 1000);
-}
+    document.addEventListener('mouseleave', () => {
+        targetX = 0; targetY = 0;
+        startLoop();
+    });
 
-sendBtn.addEventListener('click', handleSubmit);
+    /* Touch */
+    document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        const nx = (t.clientX / window.innerWidth  - 0.5) * 2;
+        const ny = (t.clientY / window.innerHeight - 0.5) * 2;
+        targetX = -nx * STRENGTH;
+        targetY = -ny * STRENGTH;
+        startLoop();
+    }, { passive: true });
 
-emailInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleSubmit();
-});
+    document.addEventListener('touchend', () => {
+        targetX = 0; targetY = 0;
+        startLoop();
+    }, { passive: true });
 
-emailInput.addEventListener('input', () => {
-    if (formMessage.classList.contains('error')) {
-        formMessage.textContent = '';
-        formMessage.className   = 'form-message';
+    /* Device tilt */
+    window.addEventListener('deviceorientation', (e) => {
+        if (e.gamma === null || e.beta === null) return;
+        const nx = Math.max(-1, Math.min(1, e.gamma / 25));
+        const ny = Math.max(-1, Math.min(1, (e.beta - 20) / 35));
+        targetX = -nx * STRENGTH;
+        targetY = -ny * STRENGTH;
+        startLoop();
+    });
+
+    /* ============================================
+    2. MODAL — open / close
+    ============================================ */
+    const overlay      = document.getElementById('modalOverlay');
+    const glassForm    = document.getElementById('glassForm');
+    const openBtn      = document.getElementById('getInTouchBtn');
+    const closeBtn     = document.getElementById('modalClose');
+
+    function openModal() {
+        overlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        // Focus first input after transition
+        setTimeout(() => {
+            const first = glassForm.querySelector('.glass-input');
+            if (first) first.focus();
+        }, 420);
     }
-});
+
+    function closeModal() {
+        overlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+        clearForm();
+    }
+
+    /* Open on button click */
+    openBtn.addEventListener('click', openModal);
+
+    /* Close on X button */
+    closeBtn.addEventListener('click', closeModal);
+
+    /* Close on overlay backdrop click */
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
+
+    /* Close on Escape key */
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeModal();
+    });
+
+    /* ============================================
+    3. CONTACT FORM — validation & submit
+    ============================================ */
+    const submitBtn      = document.getElementById('submitBtn');
+    const successMsg     = document.getElementById('glassSuccessMsg');
+
+    const inputName  = document.getElementById('inputName');
+    const inputEmail = document.getElementById('inputEmail');
+    const inputPhone = document.getElementById('inputPhone');
+    const inputMsg   = document.getElementById('inputMsg');
+
+    function isValidEmail(v) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    }
+
+    function isValidPhone(v) {
+        return v.trim() === '' || /^[\+\d\s\-\(\)]{7,20}$/.test(v.trim());
+    }
+
+    function showMsg(text, type) {
+        successMsg.textContent = text;
+        successMsg.className   = 'glass-success-msg ' + type;
+        clearTimeout(successMsg._timer);
+        if (type !== 'success') {
+            successMsg._timer = setTimeout(() => {
+                successMsg.textContent = '';
+                successMsg.className   = 'glass-success-msg';
+            }, 4000);
+        }
+    }
+
+    function clearForm() {
+        [inputName, inputEmail, inputPhone, inputMsg].forEach(el => {
+            el.value = '';
+            el.style.borderColor = '';
+        });
+        successMsg.textContent = '';
+        successMsg.className   = 'glass-success-msg';
+        submitBtn.disabled     = false;
+        submitBtn.querySelector('span').textContent = 'Send Message';
+    }
+
+    function markError(input) {
+        input.style.borderColor = 'rgba(248, 113, 113, 0.7)';
+        input.focus();
+    }
+
+    function clearError(input) {
+        input.style.borderColor = '';
+    }
+
+    /* Clear error highlight on input */
+    [inputName, inputEmail, inputPhone, inputMsg].forEach(el => {
+        el.addEventListener('input', () => clearError(el));
+    });
+
+    function handleFormSubmit() {
+        const name  = inputName.value.trim();
+        const email = inputEmail.value.trim();
+        const phone = inputPhone.value.trim();
+        const msg   = inputMsg.value.trim();
+
+        /* ── Validation ── */
+        if (!name) {
+            markError(inputName);
+            showMsg('Please enter your name.', 'error');
+            return;
+        }
+
+        if (!email || !isValidEmail(email)) {
+            markError(inputEmail);
+            showMsg('Please enter a valid email address.', 'error');
+            return;
+        }
+
+        if (!isValidPhone(phone)) {
+            markError(inputPhone);
+            showMsg('Please enter a valid phone number.', 'error');
+            return;
+        }
+
+        if (!msg) {
+            markError(inputMsg);
+            showMsg('Please write a message.', 'error');
+            return;
+        }
+
+        /* ── Submit ── */
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Sending…';
+
+        /*
+        * Replace the setTimeout with your real API call:
+        *
+        * fetch('/api/contact', {
+        *   method: 'POST',
+        *   headers: { 'Content-Type': 'application/json' },
+        *   body: JSON.stringify({ name, email, phone, message: msg })
+        * })
+        * .then(res => res.json())
+        * .then(() => {
+        *   showMsg('Message sent! We\'ll be in touch soon 🎉', 'success');
+        *   submitBtn.querySelector('span').textContent = 'Sent ✓';
+        *   setTimeout(closeModal, 2200);
+        * })
+        * .catch(() => {
+        *   showMsg('Something went wrong. Please try again.', 'error');
+        *   submitBtn.disabled = false;
+        *   submitBtn.querySelector('span').textContent = 'Send Message';
+        * });
+        */
+        setTimeout(() => {
+            showMsg("Message sent! We'll be in touch soon 🎉", 'success');
+            submitBtn.querySelector('span').textContent = 'Sent ✓';
+            // Auto close after 2.2s
+            setTimeout(closeModal, 2200);
+        }, 1000);
+    }
+
+    submitBtn.addEventListener('click', handleFormSubmit);
+
+    /* Allow Enter to submit (but not inside textarea) */
+    glassForm.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            handleFormSubmit();
+        }
+    });

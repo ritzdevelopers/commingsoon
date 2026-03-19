@@ -1,9 +1,7 @@
 /* ============================================
    RESET & BASE
 ============================================ */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -14,8 +12,7 @@ html {
     text-size-adjust: 100%;
 }
 
-html,
-body {
+html, body {
     height: 100%;
 }
 
@@ -33,16 +30,11 @@ body {
 }
 
 /* ============================================
-   BACKGROUND
-   — NO CSS animation here.
-   — JS handles transform via cursor parallax.
-   — scale(1.1) gives room to shift without
-     showing white edges.
+   BACKGROUND — cursor parallax via JS
 ============================================ */
 .bg {
     position: fixed;
     inset: -5%;
-    /* overflow slightly so edges never show */
     width: 110%;
     height: 110%;
     background-image: url('./public/images/bg.png');
@@ -50,111 +42,72 @@ body {
     background-position: center center;
     background-repeat: no-repeat;
     z-index: 0;
-    transform: scale(1) translate(0px, 0px);
+    transform: translate(0px, 0px);
     will-change: transform;
-    transition: transform 0.05s linear;
-    /* fallback smoothing */
 }
 
 /* ============================================
    KEYFRAMES
 ============================================ */
 @keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(28px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0);    }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 @keyframes revealComing {
-    from {
-        opacity: 0;
-        letter-spacing: 0.55em;
-        transform: scaleX(1.08);
-    }
-
-    to {
-        opacity: 1;
-        letter-spacing: 0.02em;
-        transform: scaleX(1);
-    }
+    from { opacity: 0; letter-spacing: 0.55em; transform: scaleX(1.08); }
+    to   { opacity: 1; letter-spacing: 0.02em; transform: scaleX(1);    }
 }
 
 @keyframes revealSoon {
-    0% {
-        opacity: 0;
-        transform: scale(0.6);
-    }
-
-    70% {
-        opacity: 1;
-        transform: scale(1.06);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+    0%   { opacity: 0; transform: scale(0.6);  }
+    70%  { opacity: 1; transform: scale(1.06); }
+    100% {             transform: scale(1);    }
 }
 
 @keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
+    0%, 100% { transform: translateY(0);    }
+    50%       { transform: translateY(-8px); }
 }
 
 @keyframes shimmer {
-    0% {
-        background-position: -200% center;
-    }
-
-    100% {
-        background-position: 200% center;
-    }
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
 }
 
 @keyframes popIn {
-    from {
-        opacity: 0;
-        transform: scale(0.5) translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.5) translateY(10px); }
+    to   { opacity: 1; transform: scale(1)   translateY(0);    }
 }
 
-@keyframes borderPulse {
+/* Modal overlay fade */
+@keyframes overlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
 
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.0);
-    }
+/* Glass form slide up */
+@keyframes formSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
 
-    50% {
-        box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.18);
-    }
+@keyframes formSlideDown {
+    from { opacity: 1; transform: translateY(0)    scale(1);    }
+    to   { opacity: 0; transform: translateY(40px) scale(0.97); }
+}
+
+/* GET IN TOUCH button flash sweep */
+@keyframes flashSweep {
+    0%,  55%  { background-position: -250% center; border-color: rgba(255,255,255,0.35); }
+    75%        { background-position:  0%   center; border-color: rgba(255,255,255,0.55); }
+    85%        { background-position:  200% center; border-color: rgba(255,255,255,0.75); }
+    100%       { background-position:  400% center; border-color: rgba(255,255,255,0.35); }
 }
 
 /* ============================================
@@ -226,191 +179,87 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin-top: -8px;
-    background: linear-gradient(90deg,
-            rgba(255, 255, 255, 0.95) 0%,
-            rgba(255, 255, 255, 1) 40%,
-            rgba(200, 230, 240, 1) 50%,
-            rgba(255, 255, 255, 1) 60%,
-            rgba(255, 255, 255, 0.95) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.95) 0%,
+        rgba(255,255,255,1)    40%,
+        rgba(200,230,240,1)    50%,
+        rgba(255,255,255,1)    60%,
+        rgba(255,255,255,0.95) 100%
+    );
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation:
         revealSoon 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both 0.9s,
-        shimmer 3.5s linear infinite 2s;
+        shimmer    3.5s linear infinite 2s;
     will-change: opacity, transform;
 }
 
 /* ============================================
-   NEWSLETTER
+   GET IN TOUCH BUTTON
 ============================================ */
-.newsletter-label {
-    color: #7c9099;
-    font-size: clamp(11px, 1.8vw, 14px);
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    margin-top: 24px;
-    margin-bottom: 16px;
-    padding: 0 8px;
-    animation: fadeUp 0.8s ease both 1.3s;
-}
-
-.email-row {
-    display: flex;
-    width: min(500px, 92vw);
-    border: 1.5px solid rgba(255, 255, 255, 0.5);
-    overflow: hidden;
-    animation:
-        fadeUp 0.8s ease both 1.4s,
-        borderPulse 3s ease-in-out infinite 2.5s;
-    will-change: box-shadow;
-}
-
-.email-input {
-    flex: 1 1 0;
-    min-width: 0;
-    background: rgba(255, 255, 255, 0.18);
-    border: none;
-    outline: none;
-    padding: 14px 16px;
-    color: white;
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(12px, 1.6vw, 14px);
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    transition: background 0.3s ease;
-}
-
-.email-input:focus {
-    background: rgba(255, 255, 255, 0.26);
-}
-
-.email-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
 .send-btn {
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.25);
-    border: none;
-    border-left: 1.5px solid rgba(255, 255, 255, 0.5);
-    color: #728D98;
+    margin-top: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 36px;
+    border-radius: 50px;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    background-color: rgba(255,255,255,0.12);
+    background-image: linear-gradient(
+        105deg,
+        transparent        0%,
+        transparent       30%,
+        rgba(255,255,255,0.5) 50%,
+        transparent       70%,
+        transparent      100%
+    );
+    background-size: 300% 100%;
+    background-position: -250% center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #1c606c;
     font-family: 'Montserrat', sans-serif;
-    font-size: clamp(10px, 1.2vw, 12px);
+    font-size: clamp(11px, 1.4vw, 13px);
     font-weight: 600;
-    letter-spacing: 0.15em;
-    padding: 14px clamp(14px, 4vw, 28px);
-    cursor: pointer;
-    white-space: nowrap;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+    cursor: pointer;
+    animation:
+        fadeUp     0.8s ease        both     1.2s,
+        flashSweep 4s   ease-in-out infinite 3s;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    will-change: background-position;
 }
 
 .send-btn:hover {
-    background: rgba(255, 255, 255, 0.42);
-    color: #4a6a78;
-    transform: scaleX(1.04);
+    background-color: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.6);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    animation-play-state: paused;
+    /* color: #fff; */
 }
 
-.send-btn:active {
-    transform: scaleX(0.97);
-}
+.send-btn:active { transform: scale(0.97); }
 
-.send-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Form feedback */
+/* Form message */
 .form-message {
     font-size: clamp(10px, 1.4vw, 12px);
     font-weight: 300;
     letter-spacing: 0.06em;
-    margin-top: 10px;
+    margin-top: 12px;
     min-height: 18px;
-    transition: opacity 0.3s;
     animation: fadeIn 0.4s ease both;
 }
 
-.form-message.success {
-    color: rgba(200, 255, 210, 0.95);
-}
-
-.form-message.error {
-    color: rgba(255, 180, 180, 0.95);
-}
+.form-message.success { color: rgba(200, 255, 210, 0.95); }
+.form-message.error   { color: rgba(255, 180, 180, 0.95); }
 
 /* ============================================
-   CONTACT INFO
-============================================ */
-.contact-info {
-    /* margin-top: 14px; */
-    animation: fadeUp 0.8s ease both 1.6s;
-}
-
-.contact-link {
-    display: inline-flex;
-    /* align-items: center; */
-    gap: 7px;
-    color: #566f7a;
-    text-decoration: none;
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(12px, 2.8vw, 14px);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    transition: color 0.25s ease, transform 0.25s ease;
-}
-
-.contact-link:hover {
-    color: #114852;
-    transform: translateY(-2px);
-}
-
-.contact-icon {
-    width: 23px;
-    height: 23px;
-    animation: shake 3s ease-in-out infinite;
-    transform-origin: center;
-}
-
-@keyframes shake {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    10% {
-        transform: rotate(12deg);
-    }
-
-    20% {
-        transform: rotate(-10deg);
-    }
-
-    30% {
-        transform: rotate(8deg);
-    }
-
-    40% {
-        transform: rotate(-6deg);
-    }
-
-    50% {
-        transform: rotate(4deg);
-    }
-
-    60% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(0deg);
-    }
-}
-
-/* ============================================
-   SOCIAL ICONS — fixed at bottom
+   SOCIAL ICONS
 ============================================ */
 .social-icons {
     position: fixed;
@@ -423,7 +272,6 @@ body {
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
-    white-space: nowrap;
 }
 
 .social-icons a {
@@ -440,29 +288,12 @@ body {
     transition: color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.social-icons a:nth-child(1) {
-    animation-delay: 1.70s;
-}
-
-.social-icons a:nth-child(2) {
-    animation-delay: 1.82s;
-}
-
-.social-icons a:nth-child(3) {
-    animation-delay: 1.94s;
-}
-
-.social-icons a:nth-child(4) {
-    animation-delay: 2.06s;
-}
-
-.social-icons a:nth-child(5) {
-    animation-delay: 2.18s;
-}
-
-.social-icons a:nth-child(6) {
-    animation-delay: 2.30s;
-}
+.social-icons a:nth-child(1) { animation-delay: 1.70s; }
+.social-icons a:nth-child(2) { animation-delay: 1.82s; }
+.social-icons a:nth-child(3) { animation-delay: 1.94s; }
+.social-icons a:nth-child(4) { animation-delay: 2.06s; }
+.social-icons a:nth-child(5) { animation-delay: 2.18s; }
+.social-icons a:nth-child(6) { animation-delay: 2.30s; }
 
 .social-icons a svg {
     width: clamp(15px, 3vw, 20px);
@@ -476,21 +307,246 @@ body {
 }
 
 /* ============================================
-   TABLET  ≤ 900px
+   MODAL OVERLAY
+   Strong blur hides COMING SOON text fully
 ============================================ */
-@media (max-width: 900px) {
-    .content {
-        padding: 44px 28px 72px;
-    }
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    /* background: rgba(155, 195, 215, 0.28); */
+    /* backdrop-filter: blur(28px) saturate(1.6) brightness(1.08); */
+    -webkit-backdrop-filter: blur(28px) saturate(1.6) brightness(1.08);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+    overflow-y: auto;
+}
+
+.modal-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
 }
 
 /* ============================================
-   TABLET PORTRAIT  ≤ 768px
+   GLASS FORM CARD — sky/cloud theme
+============================================ */
+.glass-form {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    background: rgba(215, 235, 245, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 24px;
+    backdrop-filter: blur(32px) saturate(1.5);
+    -webkit-backdrop-filter: blur(32px) saturate(1.5);
+    box-shadow:
+        0 8px 40px rgba(100, 160, 200, 0.18),
+        0 1px 0 rgba(255,255,255,0.5) inset;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    margin: auto;
+    flex-shrink: 0;
+}
+
+.modal-overlay.is-open .glass-form {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Gradient top bar — sky/cloud palette */
+.glass-form__bar {
+    height: 3px;
+    background: linear-gradient(90deg, #7ec8e3, #b8dff0, #e0f4fd, #7ec8e3);
+    background-size: 200% 100%;
+    animation: shimmer 4s linear infinite;
+}
+
+/* Close button */
+.modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(100, 170, 210, 0.35);
+    background: rgba(180, 220, 240, 0.18);
+    color: rgba(60, 120, 160, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    z-index: 2;
+}
+
+.modal-close:hover {
+    background: rgba(180, 220, 240, 0.35);
+    color: #2a7a9e;
+    transform: rotate(90deg);
+}
+
+.modal-close svg { width: 14px; height: 14px; }
+
+/* ── Header ── */
+.glass-form__header {
+    padding: 28px 36px 4px;
+    text-align: center;
+}
+
+.glass-form__title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.3rem, 4vw, 1.65rem);
+    font-weight: 700;
+    color: rgba(30, 80, 110, 0.95);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+}
+
+.glass-form__subtitle {
+    font-size: 13px;
+    color: rgba(60, 120, 160, 0.6);
+    font-weight: 400;
+}
+
+/* ── Body ── */
+.glass-form__body {
+    padding: 22px 36px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Input group ── */
+.glass-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.glass-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color:#469cab;
+}
+
+.glass-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+}
+
+.glass-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: rgba(80, 150, 190, 0.55);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+/* Icon aligned to top for textarea */
+.glass-icon--top {
+    top: 16px;
+    transform: none;
+}
+
+.glass-input {
+    width: 100%;
+    background: transparent;
+    /* Bottom border only */
+    border: none;
+    border-bottom: 1.5px solid rgba(100, 170, 210, 0.45);
+    border-radius: 0;
+  padding: 9px 2px;
+    color: rgba(20, 70, 100, 0.95);
+    font-family: 'Space Grotesk', 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.25s ease;
+    -webkit-appearance: none;
+    resize: none;
+}
+
+.glass-input::placeholder { color: rgba(100, 160, 200, 0.45); }
+
+.glass-input:focus {
+    border-bottom-color: rgba(30, 130, 190, 0.85);
+    background: transparent;
+}
+
+.glass-textarea {
+    min-height: 100px;
+    line-height: 1.6;
+    padding-top: 14px;
+    resize: vertical;
+}
+
+/* ── Submit button — sky/cloud theme ── */
+.glass-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #5bbcdc, #3a9fc0, #2a7fa0);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(50, 150, 200, 0.35);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+    -webkit-appearance: none;
+}
+
+.glass-btn svg   { width: 16px; height: 16px; flex-shrink: 0; }
+.glass-btn:hover { opacity: 0.88; }
+.glass-btn:active { transform: scale(0.98); }
+.glass-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success message inside form */
+.glass-success-msg {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    min-height: 20px;
+    transition: color 0.3s;
+}
+
+.glass-success-msg.success { color: rgba(20, 130, 100, 0.95); }
+.glass-success-msg.error   { color: rgba(200, 60, 60, 0.85);  }
+
+/* ============================================
+   TABLET  ≤ 768px
 ============================================ */
 @media (max-width: 768px) {
-    .content {
-        padding: 40px 22px 68px;
-    }
+    .content { padding: 40px 22px 68px; }
 
     .logo-row {
         flex-direction: column;
@@ -498,32 +554,21 @@ body {
         margin-bottom: 12px;
     }
 
-    .logo-icon {
-        width: 64px;
-    }
+    .logo-icon { width: 64px; }
+    .tagline   { font-size: 13px; text-align: center; }
 
-    .tagline {
-        font-size: 13px;
-        text-align: center;
-    }
+    .glass-form__header { padding: 24px 24px 4px; }
+    .glass-form__body   { padding: 20px 24px 28px; }
 }
 
 /* ============================================
    MOBILE  ≤ 480px
 ============================================ */
 @media (max-width: 480px) {
-    .content {
-        padding: 30px 16px 65px;
-    }
+    .content { padding: 30px 16px 65px; }
 
-    .logo-icon {
-        width: 52px;
-    }
-
-    .tagline {
-        font-size: 12px;
-        letter-spacing: 0.02em;
-    }
+    .logo-icon { width: 52px; }
+    .tagline   { font-size: 12px; }
 
     .coming {
         font-size: clamp(38px, 14vw, 68px);
@@ -536,234 +581,80 @@ body {
         margin-top: -4px;
     }
 
-    .email-row {
-        width: 94vw;
+    .send-btn { padding: 12px 28px; font-size: 10px; }
+
+    .modal-overlay { padding: 12px; align-items: flex-end; }
+
+    .glass-form {
+        border-radius: 20px 20px 16px 16px;
+        max-width: 100%;
+        max-height: 90dvh;
+        overflow-y: auto;
     }
 
-    .email-input {
-        padding: 12px 12px;
-    }
+    .glass-form__header { padding: 22px 20px 4px; }
+    .glass-form__body   { padding: 16px 20px 24px; gap: 14px; }
 
-    .send-btn {
-        padding: 12px 14px;
-        font-size: 9px;
-        letter-spacing: 0.12em;
-    }
+    .glass-input { font-size: 13px; padding: 10px 14px 10px 36px; }
 
-    .social-icons {
-        gap: 4px;
-        bottom: 12px;
-    }
-
-    .social-icons a svg {
-        width: 16px;
-        height: 16px;
-    }
+    .social-icons { gap: 4px; bottom: 12px; }
+    .social-icons a svg { width: 16px; height: 16px; }
 }
 
 /* ============================================
    SMALL  ≤ 375px
 ============================================ */
 @media (max-width: 375px) {
-    .content {
-        padding: 24px 12px 58px;
-    }
-
-    .logo-icon {
-        width: 44px;
-    }
-
-    .tagline {
-        font-size: 11px;
-    }
-
-    .coming {
-        font-size: clamp(32px, 14.5vw, 56px);
-    }
-
-    .soon {
-        font-size: clamp(32px, 14.5vw, 54px);
-    }
-
-    .email-row {
-        width: 97vw;
-    }
-
-    .send-btn {
-        padding: 12px 11px;
-        font-size: 8.5px;
-    }
-
-    .social-icons a svg {
-        width: 14px;
-        height: 14px;
-    }
+    .content { padding: 24px 12px 58px; }
+    .logo-icon { width: 44px; }
+    .tagline   { font-size: 11px; }
+    .coming    { font-size: clamp(32px, 14.5vw, 56px); }
+    .soon      { font-size: clamp(32px, 14.5vw, 54px); }
+    .social-icons a svg { width: 14px; height: 14px; }
 }
 
 /* ============================================
    VERY SMALL  ≤ 320px
 ============================================ */
 @media (max-width: 320px) {
-    .logo-icon {
-        width: 38px;
-    }
-
-    .tagline {
-        font-size: 10px;
-    }
-
-    .coming {
-        font-size: clamp(28px, 15vw, 46px);
-    }
-
-    .soon {
-        font-size: clamp(28px, 15vw, 44px);
-    }
-
-    .email-row {
-        width: 99vw;
-    }
-
-    .send-btn {
-        padding: 11px 9px;
-        font-size: 8px;
-    }
+    .logo-icon { width: 38px; }
+    .tagline   { font-size: 10px; }
+    .coming    { font-size: clamp(28px, 15vw, 46px); }
+    .soon      { font-size: clamp(28px, 15vw, 44px); }
 }
 
 /* ============================================
    LANDSCAPE PHONES  max-height 500px
 ============================================ */
 @media (max-height: 500px) and (orientation: landscape) {
-    .content {
-        padding: 12px 20px 55px;
-    }
+    .content { padding: 12px 20px 55px; }
 
-    .logo-row {
-        flex-direction: row;
-        gap: 12px;
-        margin-bottom: 4px;
-    }
+    .logo-row { flex-direction: row; gap: 12px; margin-bottom: 4px; }
+    .logo-icon { width: 36px; }
+    .tagline   { font-size: 10px; text-align: left; }
+    .coming    { font-size: clamp(24px, 8vw, 52px); }
+    .soon      { font-size: clamp(24px, 8vw, 50px); margin-top: -2px; }
+    .send-btn  { padding: 10px 24px; margin-top: 16px; }
 
-    .logo-icon {
-        width: 36px;
-    }
-
-    .tagline {
-        font-size: 10px;
-        text-align: left;
-    }
-
-    .coming {
-        font-size: clamp(24px, 8vw, 52px);
-    }
-
-    .soon {
-        font-size: clamp(24px, 8vw, 50px);
-        margin-top: -2px;
-    }
-
-    .newsletter-label {
-        margin-top: 8px;
-        margin-bottom: 6px;
-        font-size: 10px;
-    }
-
-    .email-row {
-        width: min(400px, 85vw);
-    }
-
-    .email-input {
-        padding: 10px 12px;
-    }
-
-    .send-btn {
-        padding: 10px 14px;
-    }
-
-    .social-icons {
-        bottom: 8px;
-    }
-
-    .social-icons a svg {
-        width: 14px;
-        height: 14px;
-    }
+    .modal-overlay { align-items: center; padding: 10px; }
+    .glass-form    { max-height: 95dvh; overflow-y: auto; }
+    .social-icons  { bottom: 8px; }
+    .social-icons a svg { width: 14px; height: 14px; }
 }
 
 /* ============================================
    LARGE DESKTOP  ≥ 1440px
 ============================================ */
 @media (min-width: 1440px) {
-    .content {
-        padding: 70px 60px 100px;
-    }
-
-    .logo-icon {
-        width: 86px;
-    }
-
-    .tagline {
-        font-size: 15px;
-    }
-
-    .social-icons a svg {
-        width: 21px;
-        height: 21px;
-    }
+    .content   { padding: 70px 60px 100px; }
+    .logo-icon { width: 86px; }
+    .tagline   { font-size: 15px; }
+    .social-icons a svg { width: 21px; height: 21px; }
 }
 
 /* ============================================
    ULTRA WIDE  ≥ 1920px
 ============================================ */
 @media (min-width: 1920px) {
-    .content {
-        padding: 80px 80px 110px;
-        max-width: 1400px;
-    }
-}
-
-@keyframes btnFlash {
-
-    0%,
-    72% {
-        background: rgba(80, 80, 80, 0.75);
-        color: rgba(255, 255, 255, 0.88);
-    }
-
-    78% {
-        background: rgba(180, 180, 180, 0.9);
-        color: #fff;
-    }
-
-    82% {
-        background: rgba(240, 240, 240, 0.95);
-        color: #444;
-    }
-
-    86% {
-        background: rgba(180, 180, 180, 0.9);
-        color: #fff;
-    }
-
-    92%,
-    100% {
-        background: rgba(80, 80, 80, 0.75);
-        color: rgba(255, 255, 255, 0.88);
-    }
-}
-
-@keyframes btnSweep {
-
-    0%,
-    72% {
-        background-position: -200% center;
-    }
-
-    82% {
-        background-position: 200% center;
-    }
-
-    100% {
-        background-position: 200% center;
-    }
+    .content { padding: 80px 80px 110px; max-width: 1400px; }
 }
