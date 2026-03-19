@@ -1,0 +1,769 @@
+/* ============================================
+   RESET & BASE
+============================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* ============================================
+   BACKGROUND
+   — NO CSS animation here.
+   — JS handles transform via cursor parallax.
+   — scale(1.1) gives room to shift without
+     showing white edges.
+============================================ */
+.bg {
+    position: fixed;
+    inset: -5%;
+    /* overflow slightly so edges never show */
+    width: 110%;
+    height: 110%;
+    background-image: url('./public/images/bg.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: 0;
+    transform: scale(1) translate(0px, 0px);
+    will-change: transform;
+    transition: transform 0.05s linear;
+    /* fallback smoothing */
+}
+
+/* ============================================
+   KEYFRAMES
+============================================ */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(28px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes revealComing {
+    from {
+        opacity: 0;
+        letter-spacing: 0.55em;
+        transform: scaleX(1.08);
+    }
+
+    to {
+        opacity: 1;
+        letter-spacing: 0.02em;
+        transform: scaleX(1);
+    }
+}
+
+@keyframes revealSoon {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.06);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.5) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes borderPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.0);
+    }
+
+    50% {
+        box-shadow: 0 0 14px 3px rgba(255, 255, 255, 0.18);
+    }
+}
+
+/* ============================================
+   CONTENT WRAPPER
+============================================ */
+.content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 50px 32px 80px;
+}
+
+/* ============================================
+   LOGO ROW
+============================================ */
+.logo-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.9s ease both 0.1s;
+}
+
+.logo-icon {
+    width: 80px;
+    height: auto;
+    flex-shrink: 0;
+    opacity: 0.92;
+    animation: float 5s ease-in-out infinite;
+    will-change: transform;
+}
+
+.tagline {
+    color: white;
+    font-size: clamp(11px, 1.5vw, 13px);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.65;
+    text-align: left;
+}
+
+/* ============================================
+   HEADINGS
+============================================ */
+.coming {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    font-size: clamp(48px, 13vw, 95px);
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    animation: revealComing 1.1s cubic-bezier(0.22, 1, 0.36, 1) both 0.4s;
+    will-change: opacity, transform;
+}
+
+.soon {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: clamp(48px, 13vw, 85px);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-top: -8px;
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(255, 255, 255, 1) 40%,
+            rgba(200, 230, 240, 1) 50%,
+            rgba(255, 255, 255, 1) 60%,
+            rgba(255, 255, 255, 0.95) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation:
+        revealSoon 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both 0.9s,
+        shimmer 3.5s linear infinite 2s;
+    will-change: opacity, transform;
+}
+
+/* ============================================
+   NEWSLETTER
+============================================ */
+.newsletter-label {
+    color: #7c9099;
+    font-size: clamp(11px, 1.8vw, 14px);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    padding: 0 8px;
+    animation: fadeUp 0.8s ease both 1.3s;
+}
+
+.email-row {
+    display: flex;
+    width: min(500px, 92vw);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    animation:
+        fadeUp 0.8s ease both 1.4s,
+        borderPulse 3s ease-in-out infinite 2.5s;
+    will-change: box-shadow;
+}
+
+.email-input {
+    flex: 1 1 0;
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    outline: none;
+    padding: 14px 16px;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(12px, 1.6vw, 14px);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    transition: background 0.3s ease;
+}
+
+.email-input:focus {
+    background: rgba(255, 255, 255, 0.26);
+}
+
+.email-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.send-btn {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    border-left: 1.5px solid rgba(255, 255, 255, 0.5);
+    color: #728D98;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(10px, 1.2vw, 12px);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 14px clamp(14px, 4vw, 28px);
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: uppercase;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+}
+
+.send-btn:hover {
+    background: rgba(255, 255, 255, 0.42);
+    color: #4a6a78;
+    transform: scaleX(1.04);
+}
+
+.send-btn:active {
+    transform: scaleX(0.97);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Form feedback */
+.form-message {
+    font-size: clamp(10px, 1.4vw, 12px);
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    margin-top: 10px;
+    min-height: 18px;
+    transition: opacity 0.3s;
+    animation: fadeIn 0.4s ease both;
+}
+
+.form-message.success {
+    color: rgba(200, 255, 210, 0.95);
+}
+
+.form-message.error {
+    color: rgba(255, 180, 180, 0.95);
+}
+
+/* ============================================
+   CONTACT INFO
+============================================ */
+.contact-info {
+    /* margin-top: 14px; */
+    animation: fadeUp 0.8s ease both 1.6s;
+}
+
+.contact-link {
+    display: inline-flex;
+    /* align-items: center; */
+    gap: 7px;
+    color: #566f7a;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(12px, 2.8vw, 14px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.contact-link:hover {
+    color: #114852;
+    transform: translateY(-2px);
+}
+
+.contact-icon {
+    width: 23px;
+    height: 23px;
+    animation: shake 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(12deg);
+    }
+
+    20% {
+        transform: rotate(-10deg);
+    }
+
+    30% {
+        transform: rotate(8deg);
+    }
+
+    40% {
+        transform: rotate(-6deg);
+    }
+
+    50% {
+        transform: rotate(4deg);
+    }
+
+    60% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* ============================================
+   SOCIAL ICONS — fixed at bottom
+============================================ */
+.social-icons {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: clamp(6px, 2.5vw, 20px);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.social-icons a {
+    color: #1c606c;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transition: color 0.2s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.social-icons a:nth-child(1) {
+    animation-delay: 1.70s;
+}
+
+.social-icons a:nth-child(2) {
+    animation-delay: 1.82s;
+}
+
+.social-icons a:nth-child(3) {
+    animation-delay: 1.94s;
+}
+
+.social-icons a:nth-child(4) {
+    animation-delay: 2.06s;
+}
+
+.social-icons a:nth-child(5) {
+    animation-delay: 2.18s;
+}
+
+.social-icons a:nth-child(6) {
+    animation-delay: 2.30s;
+}
+
+.social-icons a svg {
+    width: clamp(15px, 3vw, 20px);
+    height: clamp(15px, 3vw, 20px);
+    display: block;
+}
+
+.social-icons a:hover {
+    color: white;
+    transform: translateY(-4px) scale(1.18);
+}
+
+/* ============================================
+   TABLET  ≤ 900px
+============================================ */
+@media (max-width: 900px) {
+    .content {
+        padding: 44px 28px 72px;
+    }
+}
+
+/* ============================================
+   TABLET PORTRAIT  ≤ 768px
+============================================ */
+@media (max-width: 768px) {
+    .content {
+        padding: 40px 22px 68px;
+    }
+
+    .logo-row {
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .logo-icon {
+        width: 64px;
+    }
+
+    .tagline {
+        font-size: 13px;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   MOBILE  ≤ 480px
+============================================ */
+@media (max-width: 480px) {
+    .content {
+        padding: 30px 16px 65px;
+    }
+
+    .logo-icon {
+        width: 52px;
+    }
+
+    .tagline {
+        font-size: 12px;
+        letter-spacing: 0.02em;
+    }
+
+    .coming {
+        font-size: clamp(38px, 14vw, 68px);
+        letter-spacing: 0.01em;
+    }
+
+    .soon {
+        font-size: clamp(38px, 14vw, 65px);
+        letter-spacing: 0.01em;
+        margin-top: -4px;
+    }
+
+    .email-row {
+        width: 94vw;
+    }
+
+    .email-input {
+        padding: 12px 12px;
+    }
+
+    .send-btn {
+        padding: 12px 14px;
+        font-size: 9px;
+        letter-spacing: 0.12em;
+    }
+
+    .social-icons {
+        gap: 4px;
+        bottom: 12px;
+    }
+
+    .social-icons a svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* ============================================
+   SMALL  ≤ 375px
+============================================ */
+@media (max-width: 375px) {
+    .content {
+        padding: 24px 12px 58px;
+    }
+
+    .logo-icon {
+        width: 44px;
+    }
+
+    .tagline {
+        font-size: 11px;
+    }
+
+    .coming {
+        font-size: clamp(32px, 14.5vw, 56px);
+    }
+
+    .soon {
+        font-size: clamp(32px, 14.5vw, 54px);
+    }
+
+    .email-row {
+        width: 97vw;
+    }
+
+    .send-btn {
+        padding: 12px 11px;
+        font-size: 8.5px;
+    }
+
+    .social-icons a svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* ============================================
+   VERY SMALL  ≤ 320px
+============================================ */
+@media (max-width: 320px) {
+    .logo-icon {
+        width: 38px;
+    }
+
+    .tagline {
+        font-size: 10px;
+    }
+
+    .coming {
+        font-size: clamp(28px, 15vw, 46px);
+    }
+
+    .soon {
+        font-size: clamp(28px, 15vw, 44px);
+    }
+
+    .email-row {
+        width: 99vw;
+    }
+
+    .send-btn {
+        padding: 11px 9px;
+        font-size: 8px;
+    }
+}
+
+/* ============================================
+   LANDSCAPE PHONES  max-height 500px
+============================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+    .content {
+        padding: 12px 20px 55px;
+    }
+
+    .logo-row {
+        flex-direction: row;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+
+    .logo-icon {
+        width: 36px;
+    }
+
+    .tagline {
+        font-size: 10px;
+        text-align: left;
+    }
+
+    .coming {
+        font-size: clamp(24px, 8vw, 52px);
+    }
+
+    .soon {
+        font-size: clamp(24px, 8vw, 50px);
+        margin-top: -2px;
+    }
+
+    .newsletter-label {
+        margin-top: 8px;
+        margin-bottom: 6px;
+        font-size: 10px;
+    }
+
+    .email-row {
+        width: min(400px, 85vw);
+    }
+
+    .email-input {
+        padding: 10px 12px;
+    }
+
+    .send-btn {
+        padding: 10px 14px;
+    }
+
+    .social-icons {
+        bottom: 8px;
+    }
+
+    .social-icons a svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* ============================================
+   LARGE DESKTOP  ≥ 1440px
+============================================ */
+@media (min-width: 1440px) {
+    .content {
+        padding: 70px 60px 100px;
+    }
+
+    .logo-icon {
+        width: 86px;
+    }
+
+    .tagline {
+        font-size: 15px;
+    }
+
+    .social-icons a svg {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+/* ============================================
+   ULTRA WIDE  ≥ 1920px
+============================================ */
+@media (min-width: 1920px) {
+    .content {
+        padding: 80px 80px 110px;
+        max-width: 1400px;
+    }
+}
+
+@keyframes btnFlash {
+
+    0%,
+    72% {
+        background: rgba(80, 80, 80, 0.75);
+        color: rgba(255, 255, 255, 0.88);
+    }
+
+    78% {
+        background: rgba(180, 180, 180, 0.9);
+        color: #fff;
+    }
+
+    82% {
+        background: rgba(240, 240, 240, 0.95);
+        color: #444;
+    }
+
+    86% {
+        background: rgba(180, 180, 180, 0.9);
+        color: #fff;
+    }
+
+    92%,
+    100% {
+        background: rgba(80, 80, 80, 0.75);
+        color: rgba(255, 255, 255, 0.88);
+    }
+}
+
+@keyframes btnSweep {
+
+    0%,
+    72% {
+        background-position: -200% center;
+    }
+
+    82% {
+        background-position: 200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
