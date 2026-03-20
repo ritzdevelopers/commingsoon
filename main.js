@@ -121,6 +121,13 @@
     /* ============================================
     3. CONTACT FORM — validation & submit
     ============================================ */
+    /** Google Apps Script Web App URL (Deploy → Web app → copy /exec URL) */
+    const GOOGLE_SCRIPT_URL =
+        'https://script.google.com/macros/s/AKfycbwg_vGeJhYq9KyxGPUNKYDGI5YHeSEHEG1IPgJd3wnbqWW_Hn0oWKxGkBUtB4XaO7LG/exec';
+
+    /** Tab name in the spreadsheet (must match exactly, e.g. Sheet1) */
+    const SHEET_NAME = 'Sheet1';
+
     const submitBtn      = document.getElementById('submitBtn');
     const successMsg     = document.getElementById('glassSuccessMsg');
 
@@ -205,36 +212,52 @@
             return;
         }
 
-        /* ── Submit ── */
+        /* ── Submit (keys must match sheet row-1 headers: Name, Email, Phone, Message, Date) ── */
         submitBtn.disabled = true;
         submitBtn.querySelector('span').textContent = 'Sending…';
 
-        /*
-        * Replace the setTimeout with your real API call:
-        *
-        * fetch('/api/contact', {
-        *   method: 'POST',
-        *   headers: { 'Content-Type': 'application/json' },
-        *   body: JSON.stringify({ name, email, phone, message: msg })
-        * })
-        * .then(res => res.json())
-        * .then(() => {
-        *   showMsg('Message sent! We\'ll be in touch soon 🎉', 'success');
-        *   submitBtn.querySelector('span').textContent = 'Sent ✓';
-        *   setTimeout(closeModal, 2200);
-        * })
-        * .catch(() => {
-        *   showMsg('Something went wrong. Please try again.', 'error');
-        *   submitBtn.disabled = false;
-        *   submitBtn.querySelector('span').textContent = 'Send Message';
-        * });
-        */
-        setTimeout(() => {
-            showMsg("Message sent! We'll be in touch soon 🎉", 'success');
-            submitBtn.querySelector('span').textContent = 'Sent ✓';
-            // Auto close after 2.2s
-            setTimeout(closeModal, 2200);
-        }, 1000);
+        const now = new Date();
+        const params = new URLSearchParams();
+        params.set('sheetName', SHEET_NAME);
+        params.set('Name', name);
+        params.set('Email', email);
+        params.set('Phone', phone);
+        params.set('Message', msg);
+        /* ISO timestamp from client; your doPost still writes the Date column with server new Date() */
+        params.set('Date', now.toISOString());
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors',
+            body: params,
+        })
+            .then(function (res) { return res.text(); })
+            .then(function (text) {
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (err) {
+                    throw new Error('Invalid response from server');
+                }
+                if (data.result === 'success') {
+                    showMsg("Message sent! We'll be in touch soon 🎉", 'success');
+                    submitBtn.querySelector('span').textContent = 'Sent ✓';
+                    setTimeout(closeModal, 2200);
+                } else {
+                    const errMsg =
+                        data.error && data.error.message
+                            ? data.error.message
+                            : 'Something went wrong. Please try again.';
+                    throw new Error(errMsg);
+                }
+            })
+            .catch(function (err) {
+                const m =
+                    err && err.message ? err.message : 'Something went wrong. Please try again.';
+                showMsg(m, 'error');
+                submitBtn.disabled = false;
+                submitBtn.querySelector('span').textContent = 'Send Message';
+            });
     }
 
     submitBtn.addEventListener('click', handleFormSubmit);
